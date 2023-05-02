@@ -145,7 +145,7 @@ class sig_inf():
         return self.w,self.u
     
     def obj(self):
-        t1=-0.5*np.log(np.trace(self.sw)
+        t1=-0.5*np.log(np.trace(self.sw))
         t2=-0.5*self.mw.T().dot(np.linalg.inv(self.sw)).dot(self.mw)
         t3=0
         for i in range(self.N):
@@ -169,7 +169,7 @@ class sig_inf():
             lln.appedn(self.obj())
             #if abs(yu[-1]- yu[-2]) < eps:
                 #break
-            if abs(lln[-1]-lln[-2])<eps
+            if abs(lln[-1]-lln[-2])<eps:
                 break
         return lln, yw,yu
 
