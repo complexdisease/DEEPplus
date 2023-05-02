@@ -1,4 +1,4 @@
-# DEEPplus
+# Training DEEPplus model from consensus ATAC-seq/ChIP-seq peaks
 
 01 Creating coverage files from called peaks
 
