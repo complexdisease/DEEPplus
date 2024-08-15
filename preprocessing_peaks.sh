@@ -1,7 +1,6 @@
 #! /bin/bash
 help_str="
-  -h, --help:           print helo info
-  -b, --bedfiles string:  list of peak files in bed 
+  -h, --help:           print helo info 
   -g, --genome string:  reference chromsizes
   -o, --outdir string:         output directory
 "
