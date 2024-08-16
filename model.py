@@ -35,7 +35,7 @@ class Bottleneck(nn.Module):
             )
         self.relu = nn.ReLU(inplace=True)
 
-def forward(self, x):
+    def forward(self, x):
         residual = x
         out = self.bottleneck(x)
 
@@ -46,8 +46,8 @@ def forward(self, x):
         return out
 
 class DEEPPLUS(nn.Module):
-    def __init__(self,blocks, num_classes=2*nfeatures, expansion = 4):
-        super(ResNet,self).__init__()
+    def __init__(self,blocks, num_classes=2, expansion = 4):
+        super(DEEPPLUS,self).__init__()
         self.expansion = expansion
 
         self.conv1 = Conv1(in_planes = 4, places= 40)
