@@ -46,19 +46,49 @@ class TrainData(Data.Dataset):
         return data
 
 def encodeSeqs(seqs, inputsize):
-    seqsnp = np.zeros((len(seqs), 4, inputsize))
-    mydict = {'A': np.asarray([1, 0, 0, 0]), 'G': np.asarray([0, 1, 0, 0]),'C': np.asarray([0, 0, 1, 0]),
-            'T': np.asarray([0, 0, 0, 1]),'N': np.asarray([0, 0, 0, 0]), 'H': np.asarray([0, 0, 0, 0]),'a': np.asarray([1, 0, 0, 0]),
-            'g': np.asarray([0, 1, 0, 0]), 'c': np.asarray([0, 0, 1, 0]), 't': np.asarray([0, 0, 0, 1]), 'n': np.asarray([0, 0, 0, 0]),
-            '-': np.asarray([0, 0, 0, 0])}
-    n=0
-    for line in seqs:
-        cline = line[int(math.floor(((len(line) - inputsize) / 2.0))):int(math.floor(len(line) - (len(line) - inputsize) / 2.0))]
-        for i, c in enumerate(cline):
-            seqsnp[n, :, i] = mydict[c]
-        n = n + 1
-    dataflip = seqsnp[:, ::-1, ::-1]
-    seqsnp = np.concatenate([seqsnp, dataflip], axis=0)
+    # Create a lookup table as an array instead of using dictionary lookups
+    bases = np.array([[1, 0, 0, 0],  # A
+                      [0, 1, 0, 0],  # G
+                      [0, 0, 1, 0],  # C
+                      [0, 0, 0, 1],  # T
+                      [0, 0, 0, 0]]) # N or any other character
+
+    # Create a mapping from character to index in the lookup table
+    char_to_index = np.zeros(128, dtype=int)
+    char_to_index[ord('A')] = 0
+    char_to_index[ord('G')] = 1
+    char_to_index[ord('C')] = 2
+    char_to_index[ord('T')] = 3
+    char_to_index[ord('N')] = 4
+    # Lowercase mappings
+    char_to_index[ord('a')] = 0
+    char_to_index[ord('g')] = 1
+    char_to_index[ord('c')] = 2
+    char_to_index[ord('t')] = 3
+    char_to_index[ord('-')] = 4
+
+    # Pre-allocate the array for all sequences
+    num_seqs = len(seqs)
+    seqsnp = np.zeros((num_seqs, 4, inputsize), dtype=np.float32)
+
+    # Iterate over sequences
+    for i, seq in enumerate(seqs):
+        # Truncate or pad the sequence to fit the input size
+        cline = seq[(len(seq) - inputsize) // 2 : (len(seq) + inputsize) // 2]
+
+        # Convert sequence characters to indices
+        indices = np.frombuffer(cline.encode('ascii'), dtype=np.uint8)
+        indices = char_to_index[indices]
+
+        # Map the indices to one-hot encoding using NumPy's advanced indexing
+        seqsnp[i, :, :len(cline)] = bases[indices].T
+
+    # Create reverse complement by flipping both dimensions
+    seqsnp_flipped = seqsnp[:, ::-1, ::-1]
+
+    # Concatenate original and flipped sequences along the first axis
+    seqsnp = np.concatenate([seqsnp, seqsnp_flipped], axis=0)
+
     return seqsnp
 
 
